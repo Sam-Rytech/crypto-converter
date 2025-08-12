@@ -67,5 +67,122 @@ export default function CurrencyConverter({
 
       function handleCoinSelect(e) {
         onSelectCoin(e.target.value)
-      }
+    }
+    
+    return (
+      <div className="bg-slate-800 p-4 rounded-lg">
+        <div className="mb-3">
+          <label className="block text-sm text-slate-300">Coin</label>
+          <select
+            value={selectedCoinId || ''}
+            onChange={handleCoinSelect}
+            className="w-full mt-2 p-2 bg-slate-700 rounded"
+          >
+            {coins.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name} ({c.symbol.toUpperCase()})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2 mb-3">
+          <button
+            onClick={() => setMode('crypto->fiat')}
+            className={`px-3 py-1 rounded ${
+              mode === 'crypto->fiat' ? 'bg-slate-700' : 'bg-slate-700/30'
+            }`}
+          >
+            Crypto → Fiat
+          </button>
+          <button
+            onClick={() => setMode('fiat->crypto')}
+            className={`px-3 py-1 rounded ${
+              mode === 'fiat->crypto' ? 'bg-slate-700' : 'bg-slate-700/30'
+            }`}
+          >
+            Fiat → Crypto
+          </button>
+          <div className="ml-auto text-sm text-slate-400">
+            Prices refresh every 60s
+          </div>
+        </div>
+
+        <div className="grid gap-3">
+          {mode === 'crypto->fiat' ? (
+            <>
+              <div>
+                <label className="block text-sm text-slate-300">
+                  Amount ({selectedSymbol || 'COIN'})
+                </label>
+                <input
+                  className="mt-2 w-full p-2 rounded bg-slate-700"
+                  value={cryptoAmount}
+                  onChange={(e) => setCryptoAmount(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-slate-300">To fiat</label>
+                <div className="flex gap-2 mt-2">
+                  <select
+                    className="p-2 rounded bg-slate-700"
+                    value={fiat}
+                    onChange={(e) => setFiat(e.target.value)}
+                  >
+                    <option value="usd">USD</option>
+                    <option value="eur">EUR</option>
+                    <option value="ngn">NGN</option>
+                  </select>
+                  <input
+                    className="flex-1 p-2 rounded bg-slate-700"
+                    value={fiatAmount}
+                    readOnly
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <label className="block text-sm text-slate-300">
+                  Amount ({fiat.toUpperCase()})
+                </label>
+                <input
+                  className="mt-2 w-full p-2 rounded bg-slate-700"
+                  value={fiatAmount}
+                  onChange={(e) => setFiatAmount(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-slate-300">
+                  To crypto ({selectedSymbol || 'COIN'})
+                </label>
+                <div className="mt-2">
+                  <input
+                    className="w-full p-2 rounded bg-slate-700"
+                    value={cryptoAmount}
+                    readOnly
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="mt-4 text-sm text-slate-400">
+          {prices ? (
+            <div>
+              1 {selectedSymbol || 'COIN'} ={' '}
+              {prices.usd ? `$${prices.usd}` : '—'} •{' '}
+              {prices.eur ? `€${prices.eur}` : '—'} •{' '}
+              {prices.ngn ? `₦${prices.ngn}` : '—'}
+            </div>
+          ) : (
+            <div>Loading rates…</div>
+          )}
+        </div>
+      </div>
+    )
 }
