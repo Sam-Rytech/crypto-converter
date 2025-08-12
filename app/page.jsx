@@ -46,7 +46,7 @@ export default function HomePage() {
       return
     }
     try {
-      const results = await searchCoins(term)
+      const results = await searchCoin(term)
       setSearchResults(results)
     } catch (err) {
       console.error('Search failed:', err)
