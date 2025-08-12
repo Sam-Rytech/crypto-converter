@@ -76,4 +76,54 @@ export default function CryptoChart({ coinId }) {
     { label: '30D', days: 30 },
     { label: '1Y', days: 365 },
   ]
+
+  return (
+    <div className="bg-slate-800 rounded-lg p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex gap-2">
+          {ranges.map((r) => (
+            <button
+              key={r.label}
+              onClick={() => setDays(r.days)}
+              className={`px-3 py-1 rounded text-sm ${
+                days === r.days
+                  ? 'bg-slate-700'
+                  : 'bg-slate-700/30 hover:bg-slate-700'
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+        <div className="text-sm text-slate-400">Auto-refresh every 60s</div>
+      </div>
+
+      {loading && (
+        <div className="text-center text-slate-400 py-12">Loading chart...</div>
+      )}
+
+      {!loading && chartData && (
+        <div>
+          <Line
+            data={chartData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { labels: { color: '#e2e8f0' } },
+                tooltip: { mode: 'index', intersect: false },
+              },
+              scales: {
+                x: { ticks: { color: '#cbd5e1' } },
+                y: { ticks: { color: '#cbd5e1' } },
+              },
+            }}
+          />
+        </div>
+      )}
+
+      {!loading && !chartData && (
+        <div className="text-center text-slate-400 py-12">No chart data</div>
+      )}
+    </div>
+  )
 }
