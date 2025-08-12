@@ -27,5 +27,45 @@ export default function CurrencyConverter({
     } catch (err) {
       console.error('Failed to fetch simple price:', err)
     }
-  }
+    }
+      useEffect(() => {
+        loadPrices()
+        if (pollRef.current) clearInterval(pollRef.current)
+        pollRef.current = setInterval(loadPrices, REFRESH_MS)
+        return () => clearInterval(pollRef.current)
+      }, [selectedCoinId])
+
+      useEffect(() => {
+        if (!prices) return
+        const p = prices[fiat]
+        if (!p) return
+
+        if (mode === 'crypto->fiat') {
+          const crypto = parseFloat(cryptoAmount || '0')
+          const fiatVal = crypto * p
+          setFiatAmount(
+            fiatVal ? fiatVal.toFixed(6).replace(/\.?0+$/, '') : '0'
+          )
+        } else {
+          const fiatVal = parseFloat(fiatAmount || '0')
+          const crypto = p ? fiatVal / p : 0
+          setCryptoAmount(
+            crypto ? crypto.toFixed(6).replace(/\.?0+$/, '') : '0'
+          )
+        }
+      }, [cryptoAmount, fiatAmount, prices, fiat, mode])
+
+    
+      function toggleMode() {
+        setMode(mode === 'crypto->fiat' ? 'fiat->crypto' : 'crypto->fiat')
+        setCryptoAmount((prev) => {
+          const prevCrypto = prev
+          setFiatAmount(prevCrypto)
+          return fiatAmount || '0'
+        })
+      }
+
+      function handleCoinSelect(e) {
+        onSelectCoin(e.target.value)
+      }
 }
